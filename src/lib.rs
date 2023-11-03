@@ -20,14 +20,25 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
     let store = env.kv("KV_FROM_RUST")?;
     console_debug!("store created");
-    let value = MyValue {
-        version_number: 1,
-        data: Vec::from("testValue"),
-    };
-    store.put("testKey", value)?.execute().await?;
+    
+    // put n key value pairs
+    let n = 10;
+    for i in 0..n {
+        let key: String = format!("testKey{i}");
+        let value_data = format!("testValue{i}");
+        let value = MyValue {
+            version_number: i,
+            data: Vec::from(value_data),
+        };
+        store.put(&key, value)?.execute().await?;
+    }
 
-    let val: MyValue = store.get("testKey").json().await?.unwrap();
-    console_debug!("version_number: {:?}, data: {:?}", val.version_number, String::from_utf8(val.data).unwrap());
-
-    Response::ok("Hello, World!")
+    // call get on them
+    for i in 0..n {
+        let key: String = format!("testKey{i}");
+        let val: MyValue = store.get(&key).json().await?.unwrap();
+        console_debug!("version_number: {:?}, data: {:?}", val.version_number, String::from_utf8(val.data).unwrap());
+    }
+    
+    Response::ok("Hello, World!\n")
 }
