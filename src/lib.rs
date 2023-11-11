@@ -22,12 +22,12 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     console_debug!("store created");
     
     // put n key value pairs
-    let n = 10;
+    let n = 1;
     for i in 0..n {
         let key: String = format!("testKey{i}");
         let value_data = format!("testValue{i}");
         let value = MyValue {
-            version_number: i,
+            version_number: 1,
             data: Vec::from(value_data),
         };
         store.put(&key, value)?.execute().await?;
@@ -39,6 +39,17 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         let val: MyValue = store.get(&key).json().await?.unwrap();
         console_debug!("version_number: {:?}, data: {:?}", val.version_number, String::from_utf8(val.data).unwrap());
     }
-    
+
+    // pretend to do some work
+    console_log!("doing some work...");
+    //let work_time = std::time::Duration::from_millis(300);
+    //Delay::from(work_time).await;
+    let uri = "https://google.com";
+    let request = Request::new(uri, Method::Get)?;
+    let fetch = Fetch::Request(request);
+    let mut response = fetch.send().await?;
+    let json = response.text().await?;
+    console_log!("work done!");
+
     Response::ok("Hello, World!\n")
 }
