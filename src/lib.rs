@@ -3,8 +3,8 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct MyValue {
-    pub version_number: i32,
-    pub data: Vec<u8>,
+    pub version: i32,
+    pub value: Vec<u8>,
 }
 
 #[event(fetch)]
@@ -26,18 +26,18 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     for i in 1..(n+1) {
         let key: String = format!("net-item-{i}");
         let value_data = format!("wrong dummy value");
-        let value = MyValue {
-            version_number: 1,
-            data: Vec::from(value_data),
+        let my_value = MyValue {
+            version: 1,
+            value: Vec::from(value_data),
         };
-        store.put(&key, value)?.execute().await?;
+        store.put(&key, my_value)?.execute().await?;
     }
 
     // call get on them
     for i in 1..(n+1) {
         let key: String = format!("net-item-{i}");
         let val: MyValue = store.get(&key).json().await?.unwrap();
-        console_debug!("version_number: {:?}, data: {:?}", val.version_number, String::from_utf8(val.data).unwrap());
+        console_debug!("version_number: {:?}, data: {:?}", val.version, String::from_utf8(val.value).unwrap());
     }
 
     // pretend to do some work
