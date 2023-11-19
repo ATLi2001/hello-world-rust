@@ -23,9 +23,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     
     // put n key value pairs
     let n = 1;
-    for i in 0..n {
-        let key: String = format!("testKey{i}");
-        let value_data = format!("testValue{i}");
+    for i in 1..(n+1) {
+        let key: String = format!("net-item-{i}");
+        let value_data = format!("wrong dummy value");
         let value = MyValue {
             version_number: 1,
             data: Vec::from(value_data),
@@ -34,8 +34,8 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     }
 
     // call get on them
-    for i in 0..n {
-        let key: String = format!("testKey{i}");
+    for i in 1..(n+1) {
+        let key: String = format!("net-item-{i}");
         let val: MyValue = store.get(&key).json().await?.unwrap();
         console_debug!("version_number: {:?}, data: {:?}", val.version_number, String::from_utf8(val.data).unwrap());
     }
@@ -44,11 +44,11 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     console_log!("doing some work...");
     //let work_time = std::time::Duration::from_millis(300);
     //Delay::from(work_time).await;
-    let uri = "https://google.com";
-    let request = Request::new(uri, Method::Get)?;
-    let fetch = Fetch::Request(request);
-    let mut response = fetch.send().await?;
-    let json = response.text().await?;
+    //let uri = "https://google.com";
+    //let request = Request::new(uri, Method::Get)?;
+    //let fetch = Fetch::Request(request);
+    //let mut response = fetch.send().await?;
+    //let json = response.text().await?;
     console_log!("work done!");
 
     Response::ok("Hello, World!\n")
